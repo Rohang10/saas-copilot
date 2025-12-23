@@ -1,0 +1,57 @@
+[
+  {
+    "id": "auth_001",
+    "title": "Account Signup",
+    "body": "Users can create an account using email and password. Password must be at least 6 characters."
+  },
+  {
+    "id": "auth_002",
+    "title": "Login Issues",
+    "body": "If a user forgets their password, they can reset it using the 'Forgot Password' option on the login page. A reset link will be sent to the registered email address."
+  },
+  {
+    "id": "billing_001",
+    "title": "Billing Cycle",
+    "body": "Billing is monthly. Payments are charged automatically at the start of each billing period."
+  },
+  {
+    "id": "billing_002",
+    "title": "Payment Processing",
+    "body": "All subscription payments are processed automatically at the beginning of each monthly billing cycle."
+  },
+  {
+    "id": "billing_003",
+    "title": "Failed Payments",
+    "body": "If a payment fails, the system will retry automatically within 24 hours. Users will receive an email notification if the payment cannot be processed."
+  },
+  {
+    "id": "billing_004",
+    "title": "Refund Policy",
+    "body": "Refunds are only available within the first 7 days of the billing cycle. After this period, charges are non-refundable."
+  },
+  {
+    "id": "plans_001",
+    "title": "Subscription Plans",
+    "body": "The platform offers Free, Pro, and Enterprise plans. Each plan differs in usage limits, response speed, and feature availability."
+  },
+  {
+    "id": "plans_002",
+    "title": "Upgrading a Plan",
+    "body": "Users can upgrade their subscription plan at any time. The new plan will take effect immediately, and the price difference will be prorated."
+  },
+  {
+    "id": "usage_001",
+    "title": "Usage Limits",
+    "body": "Each subscription plan has a monthly usage limit. Once the limit is reached, users must wait until the next billing cycle or upgrade their plan."
+  },
+  {
+    "id": "support_001",
+    "title": "Customer Support",
+    "body": "Customer support is available via email during business hours. Enterprise users receive priority support with faster response times."
+  },
+  {
+    "id": "privacy_001",
+    "title": "Data Privacy",
+    "body": "User data is encrypted at rest and in transit. We do not share personal information with third parties without user consent."
+  }
+]
