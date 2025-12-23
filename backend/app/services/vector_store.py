@@ -3,9 +3,6 @@ from chromadb.config import Settings
 from pathlib import Path
 import os
 
-# -----------------------------
-# Persistent storage path
-# -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 CHROMA_PATH = os.getenv(
@@ -13,9 +10,7 @@ CHROMA_PATH = os.getenv(
     str(BASE_DIR / "chroma_db"),
 )
 
-# -----------------------------
-# Global Chroma client (IMPORTANT)
-# -----------------------------
+# Global Chroma client
 _chroma_client = chromadb.Client(
     Settings(
         persist_directory=CHROMA_PATH,
@@ -45,16 +40,12 @@ def add_chunks(chunks: list[dict]):
         ids=[c["id"] for c in chunks],
         embeddings=[c["embedding"] for c in chunks],
     )
-
-    # Explicit persistence
-    _chroma_client.persist()
+    # ❌ DO NOT CALL persist() — Chroma auto-persists now
 
 
 def query_chunks(query_embedding, top_k: int = 5):
     collection = get_collection()
-
     count = collection.count()
-    print(f"VECTOR STORE COUNT: {count}")
 
     if count == 0:
         return {
