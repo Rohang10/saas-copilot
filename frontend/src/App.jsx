@@ -1,6 +1,6 @@
 import { useState } from "react";
 import LoginPage from "./pages/LoginPage";
-import SignUpPage from "./pages/SignUpPage";
+import SignupPage from "./pages/SignupPage";
 import ChatPage from "./pages/ChatPage";
 import { getToken, logout } from "./services/api";
 
@@ -23,7 +23,7 @@ export default function App() {
   // 2️⃣ Signup page
   if (showSignUp) {
     return (
-      <SignUpPage
+      <SignupPage
         onSignupSuccess={() => {
           setLoggedIn(true);
           setShowSignUp(false);
