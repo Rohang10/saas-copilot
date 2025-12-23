@@ -1,13 +1,12 @@
 # --- imports (ALL at top) ---
 from pathlib import Path
 from dotenv import load_dotenv
-from fastapi import FastAPI , Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
-from app.api.rag import router as rag_router
+from app.api.rag import router as rag_router, ingest
 from app.db.session import engine, Base
 from app.utils.logger import log_requests
-from app.api.rag import ingest
 import os
 
 # --- environment loading ---
@@ -20,13 +19,11 @@ Base.metadata.create_all(bind=engine)
 # --- app ---
 app = FastAPI(title="SaaS Support Copilot API")
 
-
 # --- middleware ---
 app.middleware("http")(log_requests)
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=os.getenv("CORS_ORIGINS", "").split(","),
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
@@ -41,7 +38,16 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(rag_router)
 
-# --- admin ingestion (SAFE) ---
+# --- AUTO INGEST ON STARTUP (KEY FIX) ---
+@app.on_event("startup")
+def auto_ingest_on_startup():
+    if os.getenv("AUTO_INGEST", "false").lower() == "true":
+        admin_key = os.getenv("ADMIN_API_KEY")
+        if not admin_key:
+            raise RuntimeError("ADMIN_API_KEY not set for auto-ingest")
+        ingest(x_admin_key=admin_key)
+
+# --- admin ingestion (manual, secure) ---
 @app.post("/admin/ingest")
 def trigger_ingest(x_admin_key: str = Header(...)):
     if x_admin_key != os.getenv("ADMIN_API_KEY"):
@@ -50,14 +56,12 @@ def trigger_ingest(x_admin_key: str = Header(...)):
     ingest(x_admin_key=x_admin_key)
     return {"status": "ingestion completed"}
 
-
 # --- health check ---
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-
-# --- root endpoint ---
+# --- readiness check ---
 @app.get("/ready")
 def ready():
     from app.services.vector_store import get_collection
