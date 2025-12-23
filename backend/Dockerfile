@@ -41,5 +41,4 @@ COPY --from=builder /usr/local /usr/local
 # Copy backend source code
 COPY backend/ .
 
-# Expose handled automatically by Railway
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
