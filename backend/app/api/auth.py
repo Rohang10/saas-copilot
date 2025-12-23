@@ -18,31 +18,35 @@ def get_db():
 
 @router.post("/signup")
 def signup(payload: UserCreate, db: Session = Depends(get_db)):
+    # normalize input
+    email = payload.email.strip().lower()
+    password = payload.password.strip()
+
     # password validation
-    if len(payload.password) < 6:
+    if len(password) < 6:
         raise HTTPException(status_code=400, detail="Password too short")
 
-    if len(payload.password.encode("utf-8")) > 72:
+    if len(password.encode("utf-8")) > 72:
         raise HTTPException(
             status_code=400,
             detail="Password must be at most 72 characters",
         )
 
     # check existing user
-    existing = db.query(User).filter(User.email == payload.email).first()
+    existing = db.query(User).filter(User.email == email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # hash password safely
     try:
-        password_hash = hash_password(payload.password)
+        password_hash = hash_password(password)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     # create user
     user = User(
         name=payload.name,
-        email=payload.email,
+        email=email,
         password_hash=password_hash,
     )
 
@@ -69,9 +73,13 @@ def signup(payload: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login(payload: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email).first()
+    # normalize input (CRITICAL)
+    email = payload.email.strip().lower()
+    password = payload.password.strip()
 
-    if not user or not verify_password(payload.password, user.password_hash):
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     try:
