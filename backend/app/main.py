@@ -1,7 +1,7 @@
 # --- imports (ALL at top) ---
 from pathlib import Path
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI , Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.rag import router as rag_router
@@ -19,12 +19,6 @@ Base.metadata.create_all(bind=engine)
 
 # --- app ---
 app = FastAPI(title="SaaS Support Copilot API")
-
-
-@app.on_event("startup")
-def run_ingestion_once():
-    if os.getenv("AUTO_INGEST", "false").lower() == "true":
-        ingest(x_admin_key=os.getenv("ADMIN_API_KEY"))
 
 
 # --- middleware ---
@@ -46,6 +40,15 @@ app.add_middleware(
 # --- routers ---
 app.include_router(auth_router)
 app.include_router(rag_router)
+
+# --- admin ingestion (SAFE) ---
+@app.post("/admin/ingest")
+def trigger_ingest(x_admin_key: str = Header(...)):
+    if x_admin_key != os.getenv("ADMIN_API_KEY"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    ingest(x_admin_key=x_admin_key)
+    return {"status": "ingestion completed"}
 
 
 # --- health check ---
