@@ -10,7 +10,6 @@ from app.utils.logger import log_requests
 from app.api.rag import ingest
 import os 
 
-Base.metadata.create_all(bind=engine)
 # --- environment loading ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -32,7 +31,8 @@ app.middleware("http")(log_requests)
 app.add_middleware(
     CORSMiddleware,
     # allow_origins=os.getenv("CORS_ORIGINS", "").split(","),
-    allow_origins=["http://localhost:5173",  "http://127.0.0.1:5173", "https://saas-copilot-ten.vercel.app"],
+    allow_origins=["http://localhost:5173",  "http://127.0.0.1:5173", ],
+     allow_origin_regex=r"https://saas-copilot.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
